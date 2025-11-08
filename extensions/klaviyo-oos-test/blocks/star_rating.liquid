@@ -15,7 +15,7 @@
         <input type="hidden" name="product_id" value="{{ block.settings.product.id }}">
       </div>
       <div class="col-md-4">
-        <button class="button" type="submit">Notify Me When Any Variant Is Back In Stock</button>
+        <button class="button" type="submit">Notify Me When Available</button>
       </div>
 
     
@@ -99,11 +99,10 @@
 
 {% schema %}
 {
-  "name": "Star Rating",
+  "name": "Klaviyo Back In Stock Form",
   "target": "section",
   "settings": [
-    { "type": "product", "id": "product", "label": "product", "autofill": true },
-    { "type": "color", "id": "colour", "label": "Star Colour", "default": "#ff0000" }
+    { "type": "product", "id": "product", "label": "product", "autofill": true }
   ]
 }
 {% endschema %}
