@@ -11,38 +11,81 @@
 {% if all_variants_out_of_stock %}
   <form id="back-in-stock-signup" class="form-horizontal clearfix">
       <div class="col-md-8">
-        <input type="email" name="email" class="form-control input-lg klaviyo-oos-input" placeholder="Enter your email" required>
+        <input 
+          type="email" 
+          name="email" 
+          class="form-control input-lg klaviyo-oos-input" 
+          placeholder="Enter your email" 
+          required
+        >
         <input type="hidden" name="product_id" value="{{ block.settings.product.id }}">
       </div>
       <div class="col-md-4">
-        <button class="button" type="submit">Notify Me When Available</button>
+        <button class="button button--full-width button--primary" type="submit">
+          <span class="button-text">Notify Me When Available</span>
+          <span class="loading-spinner" style="display:none;margin-left:8px;">
+          </span>
+        </button>
       </div>
 
-    
+      <div id="bis-message" style="margin-top:10px;"></div>
     
   </form>
   <script>
-    document.getElementById('back-in-stock-signup').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const email = e.target.email.value;
-      const productId = e.target.product_id.value;
-      // TODO: Replace with your backend endpoint or Klaviyo API integration
-      await fetch('https://yhzyjwu742.execute-api.us-east-1.amazonaws.com/default/klaviyo_bis_product', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        mode: 'cors',
-        credentials: 'include',
-        body: JSON.stringify({ 
-          email, 
-          product_id: productId,
-          action: "signup",
-          product_url: '{{ shop.url }}{{ block.settings.product.url }}',
-        })
-      });
-      
-      alert('You will be notified when any variant is back in stock!');
+document.getElementById('back-in-stock-signup').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const email = form.email.value;
+  const productId = form.product_id.value;
+  const button = form.querySelector('button');
+  const spinner = form.querySelector('.loading-spinner');
+  const buttonText = form.querySelector('.button-text');
+  const message = document.getElementById('bis-message');
+
+  // Reset message
+  message.textContent = '';
+  message.style.color = '';
+
+  // Disable button + show spinner
+  button.disabled = true;
+  spinner.style.display = 'inline-block';
+  buttonText.textContent = 'Submitting...';
+
+  try {
+    // ✅ Updated fetch to point to your Remix route
+    const response = await fetch('/back-in-stock', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        product_id: productId,
+        action: 'signup',
+        product_url: '{{ shop.url }}/products/{{ block.settings.product.handle }}'
+      })
     });
-  </script>
+
+    if (response.ok) {
+      message.textContent = '✅ You will be notified when product is back in stock!';
+      message.style.color = 'green';
+      form.reset();
+    } else {
+      message.textContent = '⚠️ Something went wrong. Please try again later.';
+      message.style.color = 'red';
+    }
+  } catch (error) {
+    console.error(error);
+    message.textContent = '⚠️ There was a network error. Please try again.';
+    message.style.color = 'red';
+  } finally {
+    // Re-enable button + hide spinner
+    button.disabled = false;
+    spinner.style.display = 'none';
+    buttonText.textContent = 'Notify Me When Available';
+  }
+});
+</script>
+
 
   <style>
     /* #back-in-stock-signup {
