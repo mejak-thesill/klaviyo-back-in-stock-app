@@ -24,4 +24,4 @@ api_version = "2025-10"
 scopes = "write_products"
 
 [auth]
-redirect_urls = [ "https://klaviyo-back-in-stock-wdko3.ondigitalocean.app//api/auth" ]
+redirect_urls = [ "https://klaviyo-back-in-stock-wdko3.ondigitalocean.app/api/auth" ]

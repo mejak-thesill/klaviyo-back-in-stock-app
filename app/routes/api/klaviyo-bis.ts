@@ -1,29 +1,32 @@
 // app/routes/api/klaviyo-bis.ts
 import { json } from "@remix-run/node";
 
-// External Klaviyo API
+// External Klaviyo API URL
 const EXTERNAL_URL =
   "https://yhzyjwu742.execute-api.us-east-1.amazonaws.com/default/klaviyo_bis_product";
 
-// Allowed origin for CORS
+// Replace with your Shopify store domain
 const ALLOWED_ORIGIN = "https://www.thesill.com";
 
-// Remix 2.17.1: type the argument manually
+// Loader handles preflight OPTIONS requests
+export const loader = async ({ request }: { request: Request }) => {
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+    });
+  }
+
+  return json({ message: "Method not allowed" }, { status: 405 });
+};
+
+// Action handles POST requests
 export const action = async ({ request }: { request: Request }) => {
   try {
-    // Handle preflight OPTIONS request
-    if (request.method === "OPTIONS") {
-      return new Response(null, {
-        status: 204,
-        headers: {
-          "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-          "Access-Control-Allow-Methods": "POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type",
-        },
-      });
-    }
-
-    // Parse incoming JSON
     const body = await request.json();
 
     if (!body?.email || !body?.product_id) {
@@ -39,12 +42,12 @@ export const action = async ({ request }: { request: Request }) => {
       );
     }
 
-    // Forward to external API
+    // Forward request to Klaviyo
     const resp = await fetch(EXTERNAL_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        // "Authorization": `Bearer ${process.env.KLAVIYO_SECRET}`, // optional
+        // "Authorization": `Bearer ${process.env.KLAVIYO_SECRET}` // optional
       },
       body: JSON.stringify(body),
     });
