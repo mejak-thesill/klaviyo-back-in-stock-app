@@ -1,15 +1,26 @@
-// Prisma schema for Shopify Remix app sessions
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model Session {
-  id        String   @id @default(cuid())
-  data      String
-  expiresAt DateTime
+  id            String  @id @default(uuid())
+  shop          String
+  state         String
+  isOnline      Boolean @default(false)
+  scope         String?
+  expires       DateTime?
+  accessToken   String
+  userId        Int?
+  firstName     String?
+  lastName      String?
+  email         String?
+  accountOwner  Boolean @default(false)
+  locale        String?
+  collaborator  Boolean @default(false)
+  emailVerified Boolean @default(false)
 }
