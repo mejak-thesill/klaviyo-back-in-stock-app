@@ -24,3 +24,22 @@ model Session {
   collaborator  Boolean @default(false)
   emailVerified Boolean @default(false)
 }
+
+model subscribers_prod {
+  id          Int      @id @default(autoincrement())
+  email       String    @db.VarChar(255)
+  product_id  String    @db.VarChar(100)
+  product_url String?   @db.Text
+  created_at  DateTime  @db.Timestamp(6)
+
+  @@map("subscribers_prod")
+}
+
+model bis_signups {
+  id          Int      @id @default(autoincrement())
+  email       String    @db.VarChar(255)
+  product_id  String    @db.VarChar(100)
+  product_url String?   @db.Text
+  created_at  DateTime  @db.Timestamp(6)
+
+}
